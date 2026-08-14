@@ -42,9 +42,11 @@ public class JournalEntryService {
         return journalEntryRepository.findById(id);
     }
 
+    @Transactional
     public void deleteById(ObjectId id, String userName) {
-        User user = userService.findByUserName(userName);
-        /*user.getJournalEntries().removeIf(x->x.getId().equals(id));
+        try {
+            User user = userService.findByUserName(userName);
+            boolean removed = user.getJournalEntries().removeIf(x -> x.getId().equals(id));
         /* This line ensures that when a journal entry is deleted from the
          'journal_entries' collection, the corresponding reference is also removed
           from the user's 'journalEntries' list in the 'users' collection.
@@ -52,9 +54,17 @@ public class JournalEntryService {
           'journal_entries' collection will not remove its reference from the
           'users' collection, resulting in a stale (or dangling) reference.
         */
-        userService.saveEntry(user);
-        journalEntryRepository.deleteById(id);
+            if (removed) {
+                userService.saveEntry(user);
+                journalEntryRepository.deleteById(id);
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+            throw new RuntimeException("An error occured while deleting the entry");
+        }
     }
-
-
 }
+
+
+
+

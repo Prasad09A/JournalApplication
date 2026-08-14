@@ -26,9 +26,7 @@ public class User {
     @DBRef     //Make sure that all users related journal entries will show in this collection
     private List<JournalEntry> journalEntries= new ArrayList<>();
 
-
-
-
+    private List<String> roles;
 
 
 }
