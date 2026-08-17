@@ -2,16 +2,21 @@ package com.jio.journalApp.service;
 
 import com.jio.journalApp.entity.User;
 import com.jio.journalApp.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import javax.management.relation.Role;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 @Component
+@Slf4j
 public class UserService {
 
     @Autowired
@@ -20,19 +25,26 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+
     public void saveEntry(User user) {
         userRepository.save(user);
     }
 
-    public void saveNewUser(User user) {
-
-        user.setPassWord(passwordEncoder.encode(user.getPassWord()));
-
-        user.setRoles(Arrays.asList("USER"));
-
-        userRepository.save(user);
+    public boolean saveNewUser(User user) {
+        try {
+            user.setPassWord(passwordEncoder.encode(user.getPassWord()));
+            user.setRoles(Arrays.asList("USER"));
+            userRepository.save(user);
+            return true;
+        }catch(Exception e){
+            log.info("info logs triggered");
+            log.error("error logs triggered");
+            log.warn("warn logs triggered");
+            log.debug("debug logs triggered");
+            log.trace("Trace logs triggered");
+            return false;
+        }
     }
-
     public List<User> getAll() {
         return userRepository.findAll();
     }
@@ -48,4 +60,6 @@ public class UserService {
     public User findByUserName(String username) {
         return userRepository.findByUserName(username);
     }
+
+
 }
